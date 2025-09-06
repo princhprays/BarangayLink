@@ -22,7 +22,7 @@ app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 app.config['FRONTEND_URL'] = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 
 # Database configuration
-if os.getenv('FLASK_ENV') == 'production':
+if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('FLASK_ENV') == 'production':
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///barangaylink.db'
@@ -75,6 +75,10 @@ app.register_blueprint(locations_bp, url_prefix='/api/locations')
 def health_check():
     return {'status': 'healthy', 'message': 'BarangayLink API is running'}
 
+@app.route('/api/health')
+def api_health_check():
+    return {'status': 'healthy', 'message': 'BarangayLink API is running', 'version': '1.0.0'}
+
 @app.route('/uploads/documents/<filename>')
 def serve_document(filename):
     """Serve generated PDF documents"""
@@ -90,4 +94,9 @@ def serve_file(file_path):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    # Get port from environment variable (Railway sets this)
+    port = int(os.getenv('PORT', 5000))
+    debug = os.getenv('FLASK_ENV') != 'production'
+    
+    app.run(debug=debug, host='0.0.0.0', port=port)
