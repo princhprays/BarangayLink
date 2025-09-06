@@ -182,6 +182,36 @@ The system uses a comprehensive database with 13 interconnected models:
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:5000
 
+### 🌐 **Production Deployment**
+
+The application is currently deployed and live:
+
+#### **Frontend (Vercel)**
+- **URL**: https://barangaylink-l5z87m7y8-pauljohnantigo-7126s-projects.vercel.app
+- **Platform**: Vercel
+- **Build**: Automated from GitHub
+- **Status**: ✅ Live and Running
+
+#### **Backend (Railway)**
+- **Platform**: Railway
+- **Database**: PostgreSQL 17.6
+- **Status**: ✅ Live and Running
+- **Features**: Auto-scaling, managed database, environment variables
+
+#### **Deployment Architecture**
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Vercel        │    │   Railway       │    │   PostgreSQL    │
+│   (Frontend)    │◄──►│   (Backend)     │◄──►│   (Database)    │
+│   React + TS    │    │   Flask + API   │    │   Production DB │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+#### **Environment Variables (Production)**
+- **Frontend**: `VITE_API_URL` points to Railway backend
+- **Backend**: `DATABASE_URL`, `SECRET_KEY`, `JWT_SECRET_KEY`, etc.
+- **Email**: SMTP configuration for notifications
+
 #### Sample Accounts
 After setup, you can use these test accounts:
 - **Admin**: `Pauljohn` / `Pauljohn8265`
@@ -233,13 +263,20 @@ After setup, you can use these test accounts:
 
 ### 🚀 **Deployment Ready**
 
-The application is production-ready with:
+The application is production-ready and **LIVE** with:
+- **Frontend**: Deployed on Vercel (https://barangaylink-l5z87m7y8-pauljohnantigo-7126s-projects.vercel.app)
+- **Backend**: Deployed on Railway with PostgreSQL database
 - **Environment Configuration**: Separate dev/prod settings
 - **Database Migration**: Easy database setup
 - **Static File Serving**: Optimized file handling
 - **Error Logging**: Comprehensive error tracking
 - **Security Headers**: Production security measures
 - **Performance Monitoring**: Built-in performance tracking
+
+#### 🌐 **Live Application**
+- **Frontend URL**: https://barangaylink-l5z87m7y8-pauljohnantigo-7126s-projects.vercel.app
+- **Backend API**: Railway-hosted with PostgreSQL database
+- **Status**: ✅ Production Ready and Deployed
 
 ### 📚 **API Documentation**
 
@@ -285,8 +322,30 @@ For support and questions:
 - Test with the provided sample accounts
 - Check the error logs for debugging
 
+### 🚀 **Deployment Process**
+
+#### **Frontend Deployment (Vercel)**
+1. **Automatic Deployment**: Connected to GitHub repository
+2. **Build Process**: `npm install && npm run build`
+3. **Environment**: Production build with TypeScript compilation
+4. **URL**: https://barangaylink-l5z87m7y8-pauljohnantigo-7126s-projects.vercel.app
+
+#### **Backend Deployment (Railway)**
+1. **Platform**: Railway with automatic scaling
+2. **Database**: PostgreSQL 17.6 with managed backups
+3. **Environment Variables**: Secure configuration management
+4. **API**: RESTful endpoints with JWT authentication
+
+#### **Database Setup**
+- **PostgreSQL 17.6**: Production-grade database
+- **Automatic Migrations**: Flask-Migrate for schema updates
+- **Backup**: Automated backups via Railway
+- **Connection**: Secure connection strings
+
 ### 🏆 **Conclusion**
 
-BarangayLink has evolved from a concept to a production-ready barangay management platform. With comprehensive features, robust architecture, and user-friendly design, it's ready to serve real barangays and their communities.
+BarangayLink has evolved from a concept to a **production-ready, live barangay management platform**. With comprehensive features, robust architecture, and user-friendly design, it's now **actively serving real barangays and their communities**.
 
 The platform demonstrates modern web development practices, security best practices, and user experience design, making it a solid foundation for barangay digital transformation.
+
+**🎉 Status: LIVE AND DEPLOYED** - Ready for real-world usage!

@@ -198,3 +198,4 @@ backups/
 # Local development
 .local/
 local/
+.vercel
