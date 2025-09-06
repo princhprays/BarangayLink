@@ -73,11 +73,17 @@ app.register_blueprint(locations_bp, url_prefix='/api/locations')
 
 @app.route('/')
 def health_check():
-    return {'status': 'healthy', 'message': 'BarangayLink API is running'}
+    try:
+        return {'status': 'healthy', 'message': 'BarangayLink API is running', 'version': '1.0.0'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}, 500
 
 @app.route('/api/health')
 def api_health_check():
-    return {'status': 'healthy', 'message': 'BarangayLink API is running', 'version': '1.0.0'}
+    try:
+        return {'status': 'healthy', 'message': 'BarangayLink API is running', 'version': '1.0.0'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}, 500
 
 @app.route('/uploads/documents/<filename>')
 def serve_document(filename):
@@ -92,11 +98,18 @@ def serve_file(file_path):
     return send_from_directory(uploads_dir, file_path)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    
     # Get port from environment variable (Railway sets this)
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('FLASK_ENV') != 'production'
     
+    # Initialize database tables
+    try:
+        with app.app_context():
+            db.create_all()
+            print("✅ Database tables created successfully")
+    except Exception as e:
+        print(f"⚠️ Database initialization warning: {e}")
+        print("Continuing startup...")
+    
+    print(f"🚀 Starting BarangayLink API on port {port}")
     app.run(debug=debug, host='0.0.0.0', port=port)
