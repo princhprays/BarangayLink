@@ -58,6 +58,7 @@ from routes.documents import documents_bp
 from routes.sos import sos_bp
 from routes.relocation import relocation_bp
 from routes.locations import locations_bp
+from routes.populate import populate_bp
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(barangay_bp, url_prefix='/api/barangay')
@@ -70,6 +71,7 @@ app.register_blueprint(documents_bp, url_prefix='/api/documents')
 app.register_blueprint(sos_bp, url_prefix='/api/sos')
 app.register_blueprint(relocation_bp, url_prefix='/api/relocation')
 app.register_blueprint(locations_bp, url_prefix='/api/locations')
+app.register_blueprint(populate_bp, url_prefix='/api/populate')
 
 @app.route('/')
 def health_check():

@@ -1,0 +1,3 @@
+Updated Railway backend URL configuration
+Deployment trigger: 2025-01-07
+Backend URL: https://barangaylink-production.up.railway.app/api
