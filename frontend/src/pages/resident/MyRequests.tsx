@@ -9,8 +9,10 @@ import {
   Calendar,
   Package,
   User,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 export const MyRequests: React.FC = () => {
@@ -24,7 +26,7 @@ export const MyRequests: React.FC = () => {
     queryFn: marketplaceAPI.getMyRequests
   })
 
-  const requests = requestsData?.data?.requests || []
+  const requests = requestsData?.data?.data || []
 
   const cancelRequestMutation = useMutation({
     mutationFn: (requestId: number) => marketplaceAPI.cancelRequest(requestId),
@@ -108,8 +110,56 @@ export const MyRequests: React.FC = () => {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">My Item Requests</h1>
-        <p className="text-gray-600">Track and manage your item borrowing requests</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">My Requests</h1>
+        <p className="text-gray-600 mb-4">Track and manage all your requests</p>
+        
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <Link
+            to="/resident/create-request"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Plus className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Create Request</h3>
+                <p className="text-blue-100 text-sm">Document, benefit, or other requests</p>
+              </div>
+            </div>
+          </Link>
+          
+          <Link
+            to="/resident/add-item"
+            className="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Package className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Add Item</h3>
+                <p className="text-green-100 text-sm">Share items with the community</p>
+              </div>
+            </div>
+          </Link>
+          
+          <Link
+            to="/resident/community-items"
+            className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Package className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Browse Items</h3>
+                <p className="text-purple-100 text-sm">Find items to borrow</p>
+              </div>
+            </div>
+          </Link>
+        </div>
       </div>
 
         {/* Filter Tabs */}

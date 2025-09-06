@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { adminAPI } from '../../services/api'
 import { Avatar } from '../../components/Avatar'
 import { formatUserName } from '../../utils/nameUtils'
+import { useApiState } from '../../hooks/useApiState'
+import { apiCall, getStatusColor, formatDate } from '../../utils/apiUtils'
+import { ErrorMessage } from '../../components/common/ErrorMessage'
 
 interface User {
   id: number
@@ -29,9 +32,7 @@ interface User {
 }
 
 export const ManageUsers: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data: users, isLoading, error, setError, setData } = useApiState<User[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -74,25 +75,14 @@ export const ManageUsers: React.FC = () => {
   }, [filterRole, filterStatus])
 
   const fetchUsers = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      const response = await adminAPI.getAllUsers({
+    await apiCall<User[]>(
+      () => adminAPI.getAllUsers({
         role: filterRole === 'all' ? undefined : filterRole,
         status: filterStatus === 'all' ? undefined : filterStatus
-      })
-      
-      if (response.data.success) {
-        setUsers(response.data.data || [])
-      } else {
-        setError(response.data.error || 'Failed to load users. Please try again later.')
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to load users. Please try again later.')
-    } finally {
-      setLoading(false)
-    }
+      }),
+      (data) => setData(data || []),
+      (error) => setError(error)
+    )
   }
 
   const handleUserAction = async (e: React.FormEvent) => {
@@ -109,7 +99,7 @@ export const ManageUsers: React.FC = () => {
     }
   }
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = (users || []).filter(user => {
     const matchesSearch = user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
                          (user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
@@ -126,26 +116,9 @@ export const ManageUsers: React.FC = () => {
     }
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'suspended': return 'bg-red-100 text-red-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
+  // Using standardized utilities for status colors and date formatting
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -174,9 +147,7 @@ export const ManageUsers: React.FC = () => {
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
-          </div>
+          <ErrorMessage error={error} onRetry={fetchUsers} />
         )}
 
         {/* Statistics */}
@@ -190,7 +161,7 @@ export const ManageUsers: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Total Users</p>
-                <p className="text-2xl font-semibold text-gray-900">{users.length}</p>
+                <p className="text-2xl font-semibold text-gray-900">{users?.length || 0}</p>
               </div>
             </div>
           </div>
@@ -205,7 +176,7 @@ export const ManageUsers: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Residents</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {users.filter(u => u.role === 'resident').length}
+                  {users?.filter(u => u.role === 'resident').length || 0}
                 </p>
               </div>
             </div>
@@ -221,7 +192,7 @@ export const ManageUsers: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Admins</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {users.filter(u => u.role === 'admin').length}
+                  {users?.filter(u => u.role === 'admin').length || 0}
                 </p>
               </div>
             </div>
@@ -237,7 +208,7 @@ export const ManageUsers: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Active Users</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {users.filter(u => u.status === 'active').length}
+                  {users?.filter(u => u.status === 'active').length || 0}
                 </p>
               </div>
             </div>

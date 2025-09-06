@@ -43,7 +43,7 @@ export const Benefits: React.FC = () => {
   const fetchBenefits = async () => {
     try {
       const response = await benefitsAPI.getBenefits()
-      setBenefits(response.data.benefits || [])
+      setBenefits(response.data.data || [])
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch benefits')
     }
@@ -52,7 +52,7 @@ export const Benefits: React.FC = () => {
   const fetchMyApplications = async () => {
     try {
       const response = await benefitsAPI.getMyApplications()
-      setMyApplications(response.data.applications || [])
+      setMyApplications(response.data.data || [])
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch applications')
     } finally {

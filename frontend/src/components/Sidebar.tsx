@@ -4,13 +4,11 @@ import {
   Home, 
   Package, 
   FileText, 
-  Plus, 
   Gift, 
   FileCheck, 
   Megaphone, 
   AlertTriangle,
   User,
-  UserCheck,
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react'
@@ -26,15 +24,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false, onToggle 
 
   const residentItems = [
     { name: 'Dashboard', href: '/resident', icon: Home },
-    { name: 'Community Items', href: '/resident/community-items', icon: Package },
-    { name: 'My Requests', href: '/resident/my-requests', icon: FileText },
-    { name: 'Create Request', href: '/resident/create-request', icon: Plus },
-    { name: 'Add Item', href: '/resident/add-item', icon: Plus },
+    { name: 'Community', href: '/resident/community-items', icon: Package },
+    { name: 'Requests', href: '/resident/my-requests', icon: FileText },
     { name: 'Benefits', href: '/resident/benefits', icon: Gift },
-    { name: 'Certificates & Documents', href: '/resident/certificates', icon: FileCheck },
-    { name: 'Document Requests', href: '/resident/document-requests', icon: FileText },
+    { name: 'Certificates', href: '/resident/certificates', icon: FileCheck },
     { name: 'Announcements', href: '/resident/announcements', icon: Megaphone },
-    { name: 'SOS / Relocation', href: '/resident/sos-relocation', icon: AlertTriangle },
+    { name: 'Emergency', href: '/resident/sos-relocation', icon: AlertTriangle },
     { name: 'Profile', href: '/resident/profile', icon: User },
   ]
 

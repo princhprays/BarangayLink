@@ -170,7 +170,7 @@ export const benefitsAPI = {
   
   // Admin Applications
   getAllApplications: (params?: any) => 
-    api.get('/benefits/applications', { params }),
+    api.get('/benefits/admin/applications', { params }),
   approveApplication: (applicationId: number, data?: any) => 
     api.post(`/benefits/applications/${applicationId}/approve`, data),
   rejectApplication: (applicationId: number, data: { rejection_reason: string; notes?: string }) => 

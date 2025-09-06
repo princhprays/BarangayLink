@@ -154,10 +154,10 @@ export const BenefitApplications: React.FC = () => {
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {[
-            { status: 'pending', label: 'Pending', count: applications?.applications?.filter((app: any) => app.status === 'pending').length || 0 },
-            { status: 'approved', label: 'Approved', count: applications?.applications?.filter((app: any) => app.status === 'approved').length || 0 },
-            { status: 'rejected', label: 'Rejected', count: applications?.applications?.filter((app: any) => app.status === 'rejected').length || 0 },
-            { status: 'completed', label: 'Completed', count: applications?.applications?.filter((app: any) => app.status === 'completed').length || 0 }
+            { status: 'pending', label: 'Pending', count: applications?.data?.filter((app: any) => app.status === 'pending').length || 0 },
+            { status: 'approved', label: 'Approved', count: applications?.data?.filter((app: any) => app.status === 'approved').length || 0 },
+            { status: 'rejected', label: 'Rejected', count: applications?.data?.filter((app: any) => app.status === 'rejected').length || 0 },
+            { status: 'completed', label: 'Completed', count: applications?.data?.filter((app: any) => app.status === 'completed').length || 0 }
           ].map((stat) => (
             <div key={stat.status} className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center">
@@ -219,14 +219,14 @@ export const BenefitApplications: React.FC = () => {
 
         {/* Applications List */}
         <div className="space-y-4">
-          {applications?.applications?.length === 0 ? (
+          {applications?.data?.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No Applications Found</h3>
               <p className="text-gray-600">No applications match your current filters.</p>
             </div>
           ) : (
-            applications?.applications?.map((application: any) => (
+            applications?.data?.map((application: any) => (
               <div key={application.id} className="bg-white rounded-lg shadow-sm border p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

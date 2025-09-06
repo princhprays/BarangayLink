@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Menu, User, LogOut } from 'lucide-react'
+import { Menu, LogOut } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Avatar } from './Avatar'
 import { formatUserName } from '../utils/nameUtils'
@@ -41,7 +41,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
       return [
         { name: 'Residents', href: '/admin' },
         { name: 'Requests', href: '/admin/request-management' },
-        { name: 'Documents', href: '/admin/document-requests' },
         { name: 'Announcements', href: '/admin/announcements' },
         { name: 'SOS/Relocation', href: '/admin/sos-relocation' },
       ]
@@ -49,12 +48,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
     return [
       { name: 'Community', href: '/resident' },
-      { name: 'Items', href: '/resident/community-items' },
       { name: 'Requests', href: '/resident/my-requests' },
-      { name: 'Certificates', href: '/resident/certificates' },
       { name: 'Benefits', href: '/resident/benefits' },
+      { name: 'Certificates', href: '/resident/certificates' },
       { name: 'Announcements', href: '/resident/announcements' },
-      { name: 'SOS/Relocation', href: '/resident/sos-relocation' },
+      { name: 'Emergency', href: '/resident/sos-relocation' },
     ]
   }
 

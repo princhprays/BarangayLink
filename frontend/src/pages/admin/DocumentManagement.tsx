@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { api, documentsAPI, adminAPI } from '../../services/api';
 import toast from 'react-hot-toast';
+import { StepForm } from '../../components/common/StepForm';
+import { 
+  BasicInfoStep, 
+  RequirementsStep, 
+  ProcessingStep, 
+  ReviewStep,
+  DocumentTypeFormData 
+} from '../../components/forms/DocumentTypeForm';
 
 interface DocumentType {
   id: number;
@@ -56,7 +64,7 @@ const DocumentManagement: React.FC = () => {
   const [selectedRequirement, setSelectedRequirement] = useState<{name: string, files: any[]} | null>(null);
   const [forceDeleteData, setForceDeleteData] = useState<any>(null);
   
-  const [typeFormData, setTypeFormData] = useState({
+  const [typeFormData, setTypeFormData] = useState<DocumentTypeFormData>({
     name: '',
     description: '',
     requirements: '',
@@ -64,6 +72,10 @@ const DocumentManagement: React.FC = () => {
     fee: 0,
     is_active: true
   });
+
+  const updateTypeFormData = (data: Partial<DocumentTypeFormData>) => {
+    setTypeFormData(prev => ({ ...prev, ...data }));
+  };
   
   const [actionFormData, setActionFormData] = useState({
     processing_notes: '',
@@ -114,12 +126,11 @@ const DocumentManagement: React.FC = () => {
     return documentTypes.find(type => type.id === typeId);
   };
 
-  const handleCreateType = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateType = async (data: DocumentTypeFormData) => {
     try {
       const response = await api.post('/documents/types', {
-        ...typeFormData,
-        requirements: typeFormData.requirements.split(',').map(r => r.trim())
+        ...data,
+        requirements: data.requirements.split(',').map(r => r.trim())
       });
 
       if (response.data.success) {
@@ -133,20 +144,21 @@ const DocumentManagement: React.FC = () => {
           is_active: true
         });
         fetchDocumentTypes();
+        toast.success('Document type created successfully!');
       }
     } catch (error) {
       console.error('Error creating document type:', error);
+      toast.error('Failed to create document type');
     }
   };
 
-  const handleUpdateType = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdateType = async (data: DocumentTypeFormData) => {
     if (!editingType) return;
 
     try {
       const response = await api.put(`/documents/types/${editingType.id}`, {
-        ...typeFormData,
-        requirements: typeFormData.requirements.split(',').map(r => r.trim())
+        ...data,
+        requirements: data.requirements.split(',').map(r => r.trim())
       });
 
       if (response.data.success) {
@@ -161,9 +173,11 @@ const DocumentManagement: React.FC = () => {
           is_active: true
         });
         fetchDocumentTypes();
+        toast.success('Document type updated successfully!');
       }
     } catch (error) {
       console.error('Error updating document type:', error);
+      toast.error('Failed to update document type');
     }
   };
 
@@ -768,113 +782,43 @@ const DocumentManagement: React.FC = () => {
 
       {/* Type Form Modal */}
       {showTypeForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              {editingType ? 'Edit Document Type' : 'Create Document Type'}
-            </h2>
-            
-            <form onSubmit={editingType ? handleUpdateType : handleCreateType} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  value={typeFormData.name}
-                  onChange={(e) => setTypeFormData({...typeFormData, name: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={typeFormData.description}
-                  onChange={(e) => setTypeFormData({...typeFormData, description: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Requirements (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  value={typeFormData.requirements}
-                  onChange={(e) => setTypeFormData({...typeFormData, requirements: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Valid ID, Proof of Residency, Application Form"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Processing Days
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={typeFormData.processing_days}
-                    onChange={(e) => setTypeFormData({...typeFormData, processing_days: parseInt(e.target.value)})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Fee (₱)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={typeFormData.fee}
-                    onChange={(e) => setTypeFormData({...typeFormData, fee: parseFloat(e.target.value)})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  checked={typeFormData.is_active}
-                  onChange={(e) => setTypeFormData({...typeFormData, is_active: e.target.checked})}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">
-                  Active
-                </label>
-              </div>
-              
-              <div className="flex space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowTypeForm(false);
-                    setEditingType(null);
-                  }}
-                  className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  {editingType ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <StepForm
+            title={editingType ? 'Edit Document Type' : 'Create Document Type'}
+            steps={[
+              {
+                id: 'basic-info',
+                title: 'Basic Information',
+                description: 'Document name and description',
+                component: <BasicInfoStep data={typeFormData} updateData={updateTypeFormData} />
+              },
+              {
+                id: 'requirements',
+                title: 'Requirements',
+                description: 'Required documents from residents',
+                component: <RequirementsStep data={typeFormData} updateData={updateTypeFormData} />
+              },
+              {
+                id: 'processing',
+                title: 'Processing Details',
+                description: 'Time and fees',
+                component: <ProcessingStep data={typeFormData} updateData={updateTypeFormData} />
+              },
+              {
+                id: 'review',
+                title: 'Review & Confirm',
+                description: 'Final review before creating',
+                component: <ReviewStep data={typeFormData} updateData={updateTypeFormData} />
+              }
+            ]}
+            onComplete={editingType ? handleUpdateType : handleCreateType}
+            onCancel={() => {
+              setShowTypeForm(false);
+              setEditingType(null);
+            }}
+            submitText={editingType ? 'Update Document Type' : 'Create Document Type'}
+            className="max-w-lg"
+          />
         </div>
       )}
 

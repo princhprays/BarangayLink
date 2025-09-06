@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { FileUpload } from '../../components/common/FileUpload'
+import { documentsAPI } from '../../services/api'
 
 interface RequestType {
   id: string
@@ -10,11 +11,21 @@ interface RequestType {
 }
 
 export const CreateRequest: React.FC = () => {
-  const navigate = useNavigate()
   const [selectedRequestType, setSelectedRequestType] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  
+  // Document request form state
+  const [documentFormData, setDocumentFormData] = useState({
+    document_type_id: '',
+    purpose: '',
+    quantity: 1,
+    delivery_method: 'pickup',
+    delivery_address: '',
+    delivery_notes: ''
+  })
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 
   const requestTypes: RequestType[] = [
     {
@@ -62,12 +73,6 @@ export const CreateRequest: React.FC = () => {
   ]
 
   const handleRequestTypeSelect = (requestType: string) => {
-    // Redirect to dedicated Document Requests page for document requests
-    if (requestType === 'document') {
-      navigate('/resident/document-requests')
-      return
-    }
-    
     setSelectedRequestType(requestType)
     setError(null)
     setSuccess(null)
@@ -80,14 +85,46 @@ export const CreateRequest: React.FC = () => {
     setSuccess(null)
 
     try {
-      // This would be replaced with actual API call
-      console.log('Creating request:', selectedRequestType)
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setSuccess('Request created successfully! You will be notified of any updates.')
-      setSelectedRequestType(null)
+      if (selectedRequestType === 'document') {
+        // Handle document request
+        const formDataToSend = new FormData()
+        formDataToSend.append('document_type_id', documentFormData.document_type_id)
+        formDataToSend.append('purpose', documentFormData.purpose)
+        formDataToSend.append('quantity', documentFormData.quantity.toString())
+        formDataToSend.append('delivery_method', documentFormData.delivery_method)
+        formDataToSend.append('delivery_address', documentFormData.delivery_address)
+        formDataToSend.append('delivery_notes', documentFormData.delivery_notes)
+        
+        // Append uploaded files
+        uploadedFiles.forEach((file) => {
+          formDataToSend.append(`requirement_files`, file)
+        })
+
+        const response = await documentsAPI.createDocumentRequest(formDataToSend)
+        
+        if (response.data.success) {
+          setSuccess('Document request submitted successfully! You will be notified of any updates.')
+          setSelectedRequestType(null)
+          setUploadedFiles([])
+          setDocumentFormData({
+            document_type_id: '',
+            purpose: '',
+            quantity: 1,
+            delivery_method: 'pickup',
+            delivery_address: '',
+            delivery_notes: ''
+          })
+        }
+      } else {
+        // Handle other request types (existing logic)
+        console.log('Creating request:', selectedRequestType)
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        setSuccess('Request created successfully! You will be notified of any updates.')
+        setSelectedRequestType(null)
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create request')
     } finally {
@@ -180,41 +217,118 @@ export const CreateRequest: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Document Request Form */}
               {selectedRequestType === 'document' && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Document Type *</label>
-                    <select
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select document type</option>
-                      <option value="clearance">Barangay Clearance</option>
-                      <option value="indigency">Indigency Certificate</option>
-                      <option value="residency">Residency Certificate</option>
-                      <option value="business">Business Permit</option>
-                    </select>
+                <div className="space-y-6">
+                  {/* Document Type Selection */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                    <h3 className="text-sm font-bold text-gray-900 mb-3">Document Information</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-900 mb-1">Document Type *</label>
+                        <select
+                          value={documentFormData.document_type_id}
+                          onChange={(e) => setDocumentFormData({...documentFormData, document_type_id: e.target.value})}
+                          required
+                          className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white text-sm"
+                        >
+                          <option value="">Select document type</option>
+                          <option value="1">Barangay Clearance</option>
+                          <option value="2">Indigency Certificate</option>
+                          <option value="3">Residency Certificate</option>
+                          <option value="4">Business Permit</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs font-bold text-gray-900 mb-1">Purpose *</label>
+                        <textarea
+                          value={documentFormData.purpose}
+                          onChange={(e) => setDocumentFormData({...documentFormData, purpose: e.target.value})}
+                          required
+                          rows={2}
+                          className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none text-sm"
+                          placeholder="What is the purpose of this document?"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs font-bold text-gray-900 mb-1">Quantity *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={documentFormData.quantity}
+                          onChange={(e) => setDocumentFormData({...documentFormData, quantity: parseInt(e.target.value)})}
+                          required
+                          className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+                          placeholder="Number of copies needed"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Purpose *</label>
-                    <textarea
-                      required
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="What is the purpose of this document?"
+
+                  {/* File Upload Section */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                    <h3 className="text-sm font-bold text-gray-900 mb-3">Required Documents</h3>
+                    <FileUpload
+                      onFilesChange={setUploadedFiles}
+                      acceptedTypes={['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx']}
+                      maxSize={10} // 10MB
+                      multiple={true}
+                      className="border-2 border-dashed border-blue-300 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-50/50 transition-all duration-200"
+                      label=""
+                      helpText=""
                     />
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
-                    <input
-                      type="number"
-                      required
-                      min="1"
-                      max="10"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Number of copies needed"
-                    />
+
+                  {/* Delivery Method */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                    <h3 className="text-sm font-bold text-gray-900 mb-3">Delivery Options</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-900 mb-1">Delivery Method *</label>
+                        <div className="relative">
+                          <select
+                            value={documentFormData.delivery_method}
+                            onChange={(e) => setDocumentFormData({...documentFormData, delivery_method: e.target.value})}
+                            className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white text-sm"
+                          >
+                            <option value="pickup">🏢 Pickup at Barangay Hall</option>
+                            <option value="email">📧 Email Delivery</option>
+                            <option value="mail">📮 Mail Delivery</option>
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {documentFormData.delivery_method !== 'pickup' && (
+                        <div>
+                          <label className="block text-xs font-bold text-gray-900 mb-1">Delivery Address *</label>
+                          <textarea
+                            value={documentFormData.delivery_address}
+                            onChange={(e) => setDocumentFormData({...documentFormData, delivery_address: e.target.value})}
+                            required
+                            rows={2}
+                            className="w-full border-2 border-blue-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none text-sm"
+                            placeholder="Enter complete delivery address"
+                          />
+                        </div>
+                      )}
+                      
+                      <div>
+                        <label className="block text-xs font-bold text-gray-900 mb-1">Additional Notes</label>
+                        <textarea
+                          value={documentFormData.delivery_notes}
+                          onChange={(e) => setDocumentFormData({...documentFormData, delivery_notes: e.target.value})}
+                          rows={2}
+                          className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none text-sm"
+                          placeholder="Any special instructions or additional information"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -443,10 +557,12 @@ export const CreateRequest: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (selectedRequestType === 'document' && uploadedFiles.length === 0)}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Creating Request...' : 'Submit Request'}
+                  {loading ? 'Creating Request...' : 
+                   (selectedRequestType === 'document' && uploadedFiles.length === 0) ? 'Upload Documents First' : 
+                   'Submit Request'}
                 </button>
               </div>
             </form>

@@ -19,6 +19,7 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-secret-string-ch
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False  # Tokens don't expire for now
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
+app.config['FRONTEND_URL'] = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 
 # Database configuration
 if os.getenv('FLASK_ENV') == 'production':

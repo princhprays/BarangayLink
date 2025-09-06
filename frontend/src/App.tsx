@@ -42,7 +42,6 @@ import { BenefitsManagementWrapper } from './pages/admin/BenefitsManagementWrapp
 import { BenefitApplications } from './pages/admin/BenefitApplications'
 import { AnnouncementsManagement } from './pages/admin/AnnouncementsManagement'
 import { BenefitsApplication } from './pages/resident/BenefitsApplication'
-import DocumentRequests from './pages/resident/DocumentRequests'
 import { AdminDocumentRequests } from './pages/admin/DocumentRequests'
 import DocumentManagement from './pages/admin/DocumentManagement'
 import { AdminSOSRelocation } from './pages/admin/SOSRelocation'
@@ -84,7 +83,6 @@ function App() {
           <Route path="benefits" element={<Benefits />} />
           <Route path="benefits/apply" element={<BenefitsApplication />} />
           <Route path="certificates" element={<Certificates />} />
-          <Route path="document-requests" element={<DocumentRequests />} />
           <Route path="announcements" element={<Announcements />} />
           <Route path="sos-relocation" element={<SOSRelocation />} />
         </Route>

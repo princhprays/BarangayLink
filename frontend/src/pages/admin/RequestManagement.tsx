@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { adminAPI, api } from '../../services/api'
+import { RequestActionForm, RequestActionFormData } from '../../components/forms/RequestActionForm'
 
 interface Request {
   id: number
@@ -37,10 +38,17 @@ export const RequestManagement: React.FC = () => {
   const [loadingDetails, setLoadingDetails] = useState(false)
   const [requirementFiles, setRequirementFiles] = useState<any[]>([])
 
-  const [responseForm, setResponseForm] = useState({
+  const [responseForm, setResponseForm] = useState<RequestActionFormData>({
     status: 'approved',
-    notes: ''
+    notes: '',
+    rejection_reason: '',
+    processing_notes: '',
+    files: []
   })
+
+  const updateResponseForm = (data: Partial<RequestActionFormData>) => {
+    setResponseForm(prev => ({ ...prev, ...data }))
+  }
 
   const [showFileModal, setShowFileModal] = useState(false)
   const [selectedRequirement, setSelectedRequirement] = useState<{name: string, files: any[]} | null>(null)
@@ -116,7 +124,7 @@ export const RequestManagement: React.FC = () => {
     if (!selectedRequest) return
     
     // Validate rejection reason if rejecting
-    if (responseForm.status === 'rejected' && !responseForm.notes.trim()) {
+    if (responseForm.status === 'rejected' && !responseForm.rejection_reason?.trim()) {
       setError('Please provide a reason for rejection.')
       return
     }
@@ -129,10 +137,16 @@ export const RequestManagement: React.FC = () => {
         case 'document':
           if (responseForm.status === 'approved') {
             endpoint = `/documents/requests/${selectedRequest.id}/approve`
-            data = { processing_notes: responseForm.notes }
+            data = { 
+              processing_notes: responseForm.processing_notes || responseForm.notes,
+              notes: responseForm.notes 
+            }
           } else if (responseForm.status === 'rejected') {
             endpoint = `/documents/requests/${selectedRequest.id}/reject`
-            data = { rejection_reason: responseForm.notes }
+            data = { 
+              rejection_reason: responseForm.rejection_reason,
+              notes: responseForm.notes 
+            }
           }
           break
         case 'sos':
@@ -140,25 +154,38 @@ export const RequestManagement: React.FC = () => {
           endpoint = `/sos/requests/${selectedRequest.id}/respond`
           data = { 
             status: responseForm.status,
-            notes: responseForm.notes 
+            notes: responseForm.notes,
+            processing_notes: responseForm.processing_notes
           }
           break
         case 'relocation':
           if (responseForm.status === 'approved') {
             endpoint = `/relocation/requests/${selectedRequest.id}/approve`
-            data = { notes: responseForm.notes }
+            data = { 
+              notes: responseForm.notes,
+              processing_notes: responseForm.processing_notes
+            }
           } else if (responseForm.status === 'rejected') {
             endpoint = `/relocation/requests/${selectedRequest.id}/reject`
-            data = { notes: responseForm.notes }
+            data = { 
+              notes: responseForm.notes,
+              rejection_reason: responseForm.rejection_reason
+            }
           }
           break
         case 'item':
           if (responseForm.status === 'approved') {
             endpoint = `/marketplace/requests/${selectedRequest.id}/approve`
-            data = { notes: responseForm.notes }
+            data = { 
+              notes: responseForm.notes,
+              processing_notes: responseForm.processing_notes
+            }
           } else if (responseForm.status === 'rejected') {
             endpoint = `/marketplace/requests/${selectedRequest.id}/reject`
-            data = { rejection_reason: responseForm.notes }
+            data = { 
+              rejection_reason: responseForm.rejection_reason,
+              notes: responseForm.notes
+            }
           }
           break
       }
@@ -783,74 +810,28 @@ export const RequestManagement: React.FC = () => {
                         
                         <div className="p-6">
                           <form onSubmit={handleRequestResponse} className="space-y-6">
-                        <div>
-                              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                Decision *
-                              </label>
-                              <div className="relative">
-                          <select
-                            required
-                            value={responseForm.status}
-                            onChange={(e) => setResponseForm({...responseForm, status: e.target.value})}
-                                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white text-gray-900 font-medium"
-                          >
-                                  <option value="approved">✅ Approve & Generate Document</option>
-                                  <option value="rejected">❌ Reject Request</option>
-                          </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </div>
-                              </div>
-                        </div>
-                        
-                        <div>
-                              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                {responseForm.status === 'rejected' ? (
-                                  <>
-                                    <span className="text-red-600">Rejection Reason *</span>
-                                    <span className="text-gray-500 text-xs ml-2">Required for rejections</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <span className="text-gray-700">Notes</span>
-                                    <span className="text-gray-500 text-xs ml-2">Optional</span>
-                                  </>
-                                )}
-                              </label>
-                          <textarea
-                                required={responseForm.status === 'rejected'}
-                            value={responseForm.notes}
-                                onChange={(e) => {
-                                  setResponseForm({...responseForm, notes: e.target.value})
-                                  if (error) setError(null) // Clear error when user starts typing
-                                }}
-                            rows={4}
-                                className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 resize-none ${
-                                  responseForm.status === 'rejected' 
-                                    ? 'border-red-200 focus:border-red-500 focus:ring-red-200' 
-                                    : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'
-                                }`}
-                                placeholder={responseForm.status === 'rejected' ? 'Please provide a detailed reason for rejection...' : 'Add any notes about your decision (optional)...'}
-                          />
-                        </div>
-                        
+                            <RequestActionForm
+                              data={responseForm}
+                              updateData={updateResponseForm}
+                              actionType={responseForm.status as 'approve' | 'reject' | 'complete'}
+                              requestDetails={requestDetails}
+                            />
+                            
                             <div className="flex space-x-4 pt-6 border-t border-gray-200">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowModal(false)
-                              setSelectedRequest(null)
-                              setRequestDetails(null)
-                              setUploadedFiles([])
-                            }}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShowModal(false)
+                                  setSelectedRequest(null)
+                                  setRequestDetails(null)
+                                  setUploadedFiles([])
+                                }}
                                 className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium border border-gray-300"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="submit"
                                 className={`flex-1 px-6 py-3 text-white rounded-xl transition-all duration-200 font-medium ${
                                   responseForm.status === 'approved'
                                     ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-green-200'
@@ -858,9 +839,9 @@ export const RequestManagement: React.FC = () => {
                                 }`}
                               >
                                 {responseForm.status === 'approved' ? '✅ Approve Request' : '❌ Reject Request'}
-                          </button>
-                        </div>
-                      </form>
+                              </button>
+                            </div>
+                          </form>
                         </div>
                     </div>
                   </div>

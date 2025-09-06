@@ -40,19 +40,14 @@ export const AdminDashboard: React.FC = () => {
     queryFn: () => adminAPI.getAllUsers({ role: 'resident', status: 'rejected', page: 1, per_page: 1000 })
   })
 
-  const stats: DashboardStats = dashboardData?.data?.success ? dashboardData.data.data || {
-    barangay_id: 0,
-    pending_residents: 0,
-    total_residents: 0,
-    approved_residents: 0
-  } : {
+  const stats: DashboardStats = dashboardData?.data || {
     barangay_id: 0,
     pending_residents: 0,
     total_residents: 0,
     approved_residents: 0
   }
 
-  const pendingItems = pendingItemsData?.data?.success ? pendingItemsData.data.data || [] : []
+  const pendingItems = pendingItemsData?.data?.items || []
   
   // Calculate additional stats from real data
   const allUsers = allUsersData?.data?.success ? allUsersData.data.data || [] : []

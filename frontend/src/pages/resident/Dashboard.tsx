@@ -202,7 +202,7 @@ export const ResidentDashboard: React.FC = () => {
       title: 'Request Document',
       description: 'Request official documents',
       icon: FileText,
-      href: '/resident/document-requests',
+      href: '/resident/certificates',
       color: 'bg-orange-500'
     }
   ]

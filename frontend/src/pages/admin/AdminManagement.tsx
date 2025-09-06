@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '../../contexts/AuthContext'
 import { adminAPI } from '../../services/api'
 
 interface SystemStats {
@@ -20,7 +19,6 @@ interface AdminAction {
 }
 
 export const AdminManagement: React.FC = () => {
-  const { user } = useAuth()
   const [stats, setStats] = useState<SystemStats | null>(null)
   const [recentActions, setRecentActions] = useState<AdminAction[]>([])
   const [loading, setLoading] = useState(true)
@@ -245,18 +243,6 @@ export const AdminManagement: React.FC = () => {
               </div>
             </button>
 
-            <button
-              onClick={() => window.location.href = '/admin/document-requests'}
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <svg className="h-6 w-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <div className="text-left">
-                <p className="text-sm font-medium text-gray-900">Document Requests</p>
-                <p className="text-xs text-gray-500">Process certificates</p>
-              </div>
-            </button>
 
             <button
               onClick={() => window.location.href = '/admin/manage-users'}
