@@ -11,8 +11,7 @@ import {
   User,
   Phone,
   Mail,
-  Plus,
-  Eye
+  Plus
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -226,15 +225,6 @@ export const BenefitsApplication: React.FC = () => {
     })
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending': return <Clock className="h-5 w-5 text-yellow-500" />
-      case 'approved': return <CheckCircle className="h-5 w-5 text-green-500" />
-      case 'rejected': return <XCircle className="h-5 w-5 text-red-500" />
-      case 'completed': return <CheckCircle className="h-5 w-5 text-blue-500" />
-      default: return <Clock className="h-5 w-5 text-gray-500" />
-    }
-  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -247,7 +237,7 @@ export const BenefitsApplication: React.FC = () => {
   }
 
   const hasAppliedForBenefit = (benefitId: number) => {
-    return myApplications?.applications?.some((app: any) => 
+    return myApplications?.data?.applications?.some((app: any) => 
       app.benefit_id === benefitId && app.status !== 'rejected'
     )
   }
@@ -274,12 +264,12 @@ export const BenefitsApplication: React.FC = () => {
       </div>
 
       {/* My Applications Summary */}
-      {myApplications?.applications?.length > 0 && (
+      {myApplications?.data?.applications?.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">My Applications</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {['pending', 'approved', 'rejected', 'completed'].map((status) => {
-              const count = myApplications.applications.filter((app: any) => app.status === status).length
+              const count = myApplications.data.applications.filter((app: any) => app.status === status).length
               return (
                 <div key={status} className="text-center">
                   <div className="text-2xl font-bold text-gray-900">{count}</div>
@@ -338,14 +328,14 @@ export const BenefitsApplication: React.FC = () => {
 
       {/* Benefits List */}
       <div className="space-y-6">
-        {benefits?.benefits?.length === 0 ? (
+        {benefits?.data?.benefits?.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No Benefits Available</h3>
             <p className="text-gray-600">No benefits match your current filters.</p>
           </div>
         ) : (
-          benefits?.benefits?.map((benefit: any) => (
+          benefits?.data?.benefits?.map((benefit: any) => (
             <div key={benefit.id} className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -421,9 +411,9 @@ export const BenefitsApplication: React.FC = () => {
                     <div className="text-center">
                       <div className="text-sm text-gray-600 mb-1">Status:</div>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        myApplications.applications.find((app: any) => app.benefit_id === benefit.id)?.status || 'pending'
+                        myApplications.data.applications.find((app: any) => app.benefit_id === benefit.id)?.status || 'pending'
                       )}`}>
-                        {myApplications.applications.find((app: any) => app.benefit_id === benefit.id)?.status?.toUpperCase() || 'PENDING'}
+                        {myApplications.data.applications.find((app: any) => app.benefit_id === benefit.id)?.status?.toUpperCase() || 'PENDING'}
                       </span>
                     </div>
                   )}
