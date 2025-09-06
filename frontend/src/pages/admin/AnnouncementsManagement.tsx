@@ -4,18 +4,14 @@ import { announcementsAPI } from '../../services/api'
 import { 
   Plus, 
   Search, 
-  Filter, 
   Edit, 
   Trash2, 
-  Eye, 
   Pin,
   PinOff,
   Calendar,
   Clock,
   MapPin,
-  AlertTriangle,
-  AlertCircle,
-  Info
+  AlertCircle
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -141,14 +137,6 @@ export const AnnouncementsManagement: React.FC = () => {
     setShowEditModal(true)
   }
 
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case 'high': return <AlertTriangle className="h-5 w-5 text-red-500" />
-      case 'medium': return <AlertCircle className="h-5 w-5 text-yellow-500" />
-      case 'low': return <Info className="h-5 w-5 text-blue-500" />
-      default: return <Info className="h-5 w-5 text-gray-500" />
-    }
-  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {

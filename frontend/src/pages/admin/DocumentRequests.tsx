@@ -17,7 +17,7 @@ interface DocumentRequest {
 }
 
 export const AdminDocumentRequests: React.FC = () => {
-  const { user } = useAuth()
+  const { } = useAuth()
   const [requests, setRequests] = useState<DocumentRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { authAPI } from '../../services/api'
-import { User, Edit, Save, X } from 'lucide-react'
+import { Edit, Save, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Avatar } from '../../components/Avatar'
 import { formatUserName } from '../../utils/nameUtils'
@@ -18,7 +18,7 @@ interface AdminProfile {
 }
 
 export const AdminProfile: React.FC = () => {
-  const { user, updateUser } = useAuth()
+  const { user } = useAuth()
   const [profile, setProfile] = useState<AdminProfile | null>(null)
   
   // Debug: Log AuthContext user data
@@ -94,7 +94,7 @@ export const AdminProfile: React.FC = () => {
       const response = await authAPI.updateProfile(submitData)
       const userData = response.data.user
       setProfile(userData)
-      updateUser(userData)
+      // updateUser(userData) // TODO: Implement updateUser in AuthContext
       setIsEditing(false)
       setProfilePictureFile(null)
       toast.success('Profile updated successfully!')

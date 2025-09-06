@@ -3,10 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { benefitsAPI } from '../../services/api'
 import { 
   Search, 
-  Filter, 
   FileText, 
-  Clock, 
-  CheckCircle, 
   XCircle,
   User,
   Phone,
@@ -269,7 +266,7 @@ export const BenefitsApplication: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">My Applications</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {['pending', 'approved', 'rejected', 'completed'].map((status) => {
-              const count = myApplications.data.applications.filter((app: any) => app.status === status).length
+              const count = myApplications?.data?.applications?.filter((app: any) => app.status === status).length || 0
               return (
                 <div key={status} className="text-center">
                   <div className="text-2xl font-bold text-gray-900">{count}</div>
@@ -305,7 +302,7 @@ export const BenefitsApplication: React.FC = () => {
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="">All Categories</option>
-              {categories?.map((category: string) => (
+              {categories?.data?.map((category: string) => (
                 <option key={category} value={category}>
                   {category}
                 </option>
@@ -411,9 +408,9 @@ export const BenefitsApplication: React.FC = () => {
                     <div className="text-center">
                       <div className="text-sm text-gray-600 mb-1">Status:</div>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        myApplications.data.applications.find((app: any) => app.benefit_id === benefit.id)?.status || 'pending'
+                        myApplications?.data?.applications?.find((app: any) => app.benefit_id === benefit.id)?.status || 'pending'
                       )}`}>
-                        {myApplications.data.applications.find((app: any) => app.benefit_id === benefit.id)?.status?.toUpperCase() || 'PENDING'}
+                        {myApplications?.data?.applications?.find((app: any) => app.benefit_id === benefit.id)?.status?.toUpperCase() || 'PENDING'}
                       </span>
                     </div>
                   )}

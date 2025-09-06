@@ -15,7 +15,7 @@ interface Announcement {
 }
 
 export const AdminAnnouncements: React.FC = () => {
-  const { user } = useAuth()
+  const { } = useAuth()
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../services/api'
-import { Search, User, CheckCircle, XCircle, Eye, Clock } from 'lucide-react'
+import { Search, User, CheckCircle, XCircle, Clock, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 interface Resident {
@@ -61,7 +61,7 @@ export const Verifications: React.FC = () => {
     {
       onSuccess: () => {
         toast.success('Resident approved successfully')
-        queryClient.invalidateQueries('pending-residents')
+        queryClient.invalidateQueries({ queryKey: ['pending-residents'] })
         setShowDetails(false)
         setShowApproveModal(false)
         setSelectedResident(null)
@@ -84,7 +84,7 @@ export const Verifications: React.FC = () => {
     {
       onSuccess: () => {
         toast.success('Resident rejected')
-        queryClient.invalidateQueries('pending-residents')
+        queryClient.invalidateQueries({ queryKey: ['pending-residents'] })
         setShowDetails(false)
         setShowRejectModal(false)
         setSelectedResident(null)
@@ -355,7 +355,10 @@ export const Verifications: React.FC = () => {
                             className="w-full h-48 object-contain rounded-lg bg-gray-50"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
-                              e.currentTarget.nextElementSibling.style.display = 'block'
+                              const nextElement = e.currentTarget.nextElementSibling as HTMLElement
+                              if (nextElement) {
+                                nextElement.style.display = 'block'
+                              }
                             }}
                           />
                           <div style={{ display: 'none' }} className="text-center py-8 text-gray-500">
@@ -381,7 +384,10 @@ export const Verifications: React.FC = () => {
                             className="w-full h-48 object-contain rounded-lg bg-gray-50"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
-                              e.currentTarget.nextElementSibling.style.display = 'block'
+                              const nextElement = e.currentTarget.nextElementSibling as HTMLElement
+                              if (nextElement) {
+                                nextElement.style.display = 'block'
+                              }
                             }}
                           />
                           <div style={{ display: 'none' }} className="text-center py-8 text-gray-500">

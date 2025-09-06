@@ -3,14 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { benefitsAPI } from '../../services/api'
 import { 
   Search, 
-  Filter, 
   Clock, 
   CheckCircle, 
   XCircle,
   User,
   FileText,
-  Eye,
-  MessageSquare
+  Eye
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 

@@ -23,7 +23,7 @@ interface Request {
 }
 
 export const RequestManagement: React.FC = () => {
-  const { user: currentUser } = useAuth()
+  const { } = useAuth()
   const [requests, setRequests] = useState<Request[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

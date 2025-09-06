@@ -59,7 +59,7 @@ export const RegisterPage: React.FC = () => {
 
   const password = watch('password')
   const provinceId = watch('province_id')
-  const municipalityId = watch('municipality_id')
+  // const municipalityId = watch('municipality_id') // TODO: Use municipalityId if needed
 
   // Fetch provinces
   const { data: provincesData } = useQuery({
